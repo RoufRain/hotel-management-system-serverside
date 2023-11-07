@@ -12,9 +12,6 @@ app.use(cors());
 app.use(express.json());
 
 //database start
-//U2U0UTE990MIsBap
-//hotelManagement
-
 console.log(process.env.DB_USER);
 console.log(process.env.DB_PASS);
 
