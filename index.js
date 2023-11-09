@@ -61,7 +61,7 @@ async function run() {
       res.send(result);
     });
 
-    //std4 ==> for get some data
+    //std4 ==> for get some data from database
     app.get("/bookings", async (req, res) => {
       console.log(req.query);
       let query = {};
