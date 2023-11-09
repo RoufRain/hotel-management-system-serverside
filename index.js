@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 
 const app = express();
@@ -12,8 +12,6 @@ app.use(cors());
 app.use(express.json());
 
 //database start
-console.log(process.env.DB_USER);
-console.log(process.env.DB_PASS);
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.3ovngzi.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -30,6 +28,60 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
+    //stdb1: -> for create database and collection (if once created manually into the database ,its db name same as created)
+    const roomCollection = client.db("hotelManagement").collection("rooms");
+    const bookingCollection = client
+      .db("hotelManagement")
+      .collection("bookings");
+
+    //ST2
+    app.get("/rooms", async (req, res) => {
+      const cursor = roomCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    //stdb3: ->
+    app.get("/rooms/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+
+      //set option if i want some specific info
+
+      const result = await roomCollection.findOne(query);
+      res.send(result);
+    });
+
+    //bookings for
+    app.post("/bookings", async (req, res) => {
+      const booking = req.body;
+      console.log(booking);
+      const result = await bookingCollection.insertOne(booking);
+      res.send(result);
+    });
+
+    //std4 ==> for get some data
+    app.get("/bookings", async (req, res) => {
+      console.log(req.query);
+      let query = {};
+
+      if (req.query?.email) {
+        query = { email: req.query.email };
+      }
+
+      const result = await bookingCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    //stdb5->=  ---------for delete
+    app.delete("/bookings/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await bookingCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
