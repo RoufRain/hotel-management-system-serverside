@@ -53,7 +53,7 @@ async function run() {
       res.send(result);
     });
 
-    //bookings for
+    //bookings for which is user booked form client side
     app.post("/bookings", async (req, res) => {
       const booking = req.body;
       console.log(booking);
